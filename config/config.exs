@@ -8,7 +8,7 @@
 import Config
 
 config :shortener_rest,
-       opr_api_key: System.get_env("OPR_API_KEY")
+  opr_api_key: System.get_env("OPR_API_KEY")
 
 config :shortener_rest,
   ecto_repos: [ShortenerRest.Repo]

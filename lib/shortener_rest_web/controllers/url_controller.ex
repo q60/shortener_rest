@@ -4,12 +4,21 @@ defmodule ShortenerRestWeb.URLController do
   alias ShortenerRest.URLs
 
   def create(conn, %{"url" => url}) do
-    days = APIContext.get_days(url)
-    short = URLs.add(%{url: url, days: days})
+    response =
+      case APIContext.get_days(url) do
+        {:ok, days} ->
+          %{
+            "short" => URLs.add(%{url: url, days: days}),
+            "days" => days
+          }
+
+        {:error, msg} ->
+          %{"error" => msg}
+      end
 
     conn
     |> put_status(:created)
-    |> json(%{"short" => short, "days" => days})
+    |> json(response)
   end
 
   def get(conn, %{"shortkey" => short}) do
@@ -18,6 +27,7 @@ defmodule ShortenerRestWeb.URLController do
         conn
         |> put_status(:found)
         |> json(%{"url" => url})
+
       _ ->
         conn
         |> put_status(:not_found)

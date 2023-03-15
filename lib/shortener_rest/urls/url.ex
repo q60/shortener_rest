@@ -14,6 +14,7 @@ defmodule ShortenerRest.URLs.URL do
   def changeset(url, attrs) do
     url
     |> cast(attrs, [:url, :shortkey, :days])
+    |> unique_constraint(:shortkey, name: :unique_shortened)
     |> validate_required([:url, :shortkey, :days])
   end
 end

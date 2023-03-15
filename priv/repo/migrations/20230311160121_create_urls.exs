@@ -9,5 +9,7 @@ defmodule ShortenerRest.Repo.Migrations.CreateUrls do
 
       timestamps()
     end
+
+    create unique_index(:urls, :shortkey, name: :unique_shortened)
   end
 end

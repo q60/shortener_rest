@@ -8,16 +8,18 @@ defmodule ShortenerRest.APIContext do
       %{"domains[0]" => url}
       |> URI.encode_query()
 
-    days =
+    json =
       HTTPoison.get!(
         "https://openpagerank.com/api/v1.0/getPageRank?" <> query,
         @headers
       ).body
       |> Jason.decode!()
-      |> Map.fetch!("response")
-      |> hd()
-      |> Map.fetch!("page_rank_integer")
 
-    days == 0 && 1 || days
+    with {:ok, response} <- Map.fetch(json, "response"),
+         {:ok, days} <- Map.fetch(hd(response), "page_rank_integer") do
+      {:ok, if(days == 0, do: 1, else: days)}
+    else
+      _ -> {:error, "OPR API error"}
+    end
   end
 end
